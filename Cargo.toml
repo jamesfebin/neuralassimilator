@@ -2,6 +2,15 @@
 name = "neuralassimilator"
 version = "0.1.0"
 edition = "2021"
+license = "MIT"
+description = "NeuralAssimilator is a Rust crate for fine-tuning Language Learning Models (LLMs) from unstructured text."
+repository = "https://github.com/jamesfebin/neuralassimilator"
+homepage = "https://github.com/jamesfebin/neuralassimilator"
+readme = "README.md"
+exclude = [
+    "input/*",
+    "output/*",
+]
 
 [lib]
 name = "lib"
