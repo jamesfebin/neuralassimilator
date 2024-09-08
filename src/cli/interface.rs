@@ -12,6 +12,7 @@ use crate::utils::lib::*;
 use clap::Parser;
 use crate::adapters::openai::*;
 use crate::core::assimilator::*;
+use log::debug;
 
 pub async fn run_cli_interface() -> Result<()> {
     let args = Args::parse();
@@ -29,6 +30,9 @@ pub async fn run_cli_interface() -> Result<()> {
     
     assimilator.harvest(chunk_prompt_pairs).await
         .context("Failed to harvest chunk-prompt pairs")?;
+
+    assimilator.train(output_path).await
+        .context("Failed to fine-tune LLM")?;
     
     Ok(())
 }
@@ -38,14 +42,18 @@ fn prepare_chunk_prompt_pairs(
     chunk_size: usize,
     prompts: &[String]
 ) -> Result<Vec<(String, String)>> {
+    debug!("Preparing chunk-prompt pairs");
+    debug!("Creating FileInputAdapter with input path: {:?} and chunk size: {}", input_path, chunk_size);
     let input_adapter = FileInputAdapter::new(input_path, chunk_size);
     let chunks = input_adapter.fetch_chunks()
         .context("Failed to fetch chunks from input")?;
+    debug!("Creating chunk-prompt pairs");
     let chunk_prompt_pairs = create_chunk_prompt_pairs(&chunks, prompts);
     Ok(chunk_prompt_pairs)
 }
 
 fn create_writer(output_path: &PathBuf) -> Result<Arc<Mutex<BufWriter<File>>>> {
+    debug!("Creating writer for output path: {:?}", output_path);
     let file = File::create(output_path)
         .context("Failed to create output file")?;
     let writer: Arc<Mutex<BufWriter<File>>> = Arc::new(Mutex::new(BufWriter::new(file)));

@@ -5,6 +5,7 @@ use std::sync::Arc;
 use std::io::Write;
 use tokio::sync::Mutex;
 use crate::core::learn::Instruction;
+use log::{info, debug};
 
 #[derive(Serialize)]
 struct Message {
@@ -21,6 +22,7 @@ pub async fn output_jsonl(
     writer: &Arc<Mutex<std::io::BufWriter<File>>>, 
     instruction: Instruction
 ) -> Result<()> {
+    info!("Starting to output JSONL for instruction");
     let messages = vec![
         Message {
             role: "system".to_string(),
@@ -39,10 +41,12 @@ pub async fn output_jsonl(
     let json_line = JsonLine { messages };
     let json = serde_json::to_string(&json_line)
         .context("Failed to serialize JsonLine to string")?;
+    debug!("Serialized JSON line: {}", json);
 
     let mut writer = writer.lock().await;
     writeln!(writer, "{}", json)
         .context("Failed to write JSON line to file")?;
-
+    
+    info!("Successfully wrote JSON line to file");
     Ok(())
 }
