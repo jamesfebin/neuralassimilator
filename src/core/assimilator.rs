@@ -76,7 +76,7 @@ impl<T: LLMProvider> Assimilator<T> {
     }
 
    pub async fn train(&self, output_path: PathBuf) -> Result<()> {
-    info!("Beginning to fine-tune the LLM");
+    println!("Beginning to fine-tune the LLM");
         self.llm.train(output_path).await.context("Failed to fine-tune LLM")
     }
 

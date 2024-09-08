@@ -202,7 +202,7 @@ impl LLMInterface for OpenAI {
             .context("Failed to get status from fine-tuning job response")?
             .to_string();
 
-        info!("Fine-tuning job created. Status: {}", status);
+        println!("Fine-tuning job created. Status: {}", status);
         debug!("Response: {:?}", fine_tuning_response);
         Ok(())
     }
